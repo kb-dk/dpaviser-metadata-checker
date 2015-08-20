@@ -3,6 +3,8 @@ package dk.statsbiblioteket.dpaviser.metadatachecker;
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.medieplatform.autonomous.TreeProcessorAbstractRunnableComponent;
+import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.EventRunner;
+import dk.statsbiblioteket.newspaper.metadatachecker.caches.DocumentCache;
 
 import java.util.Properties;
 
@@ -11,8 +13,11 @@ import java.util.Properties;
  */
 public class BatchMetadataCheckerComponent extends TreeProcessorAbstractRunnableComponent {
 
-    public BatchMetadataCheckerComponent(Properties properties) {
+    private final DocumentCache documentCache;
+
+    public BatchMetadataCheckerComponent(Properties properties, DocumentCache documentCache) {
         super(properties);
+        this.documentCache = documentCache;
     }
 
     @Override
@@ -29,16 +34,14 @@ public class BatchMetadataCheckerComponent extends TreeProcessorAbstractRunnable
      */
     public void doWorkOnItem(Batch batch, ResultCollector resultCollector) throws Exception {
 
-        // Don't do anything for now.
+        BatchMetadataEventHandlerSupplier eventHandlerSupplier =
+                new BatchMetadataEventHandlerSupplier(getProperties(), documentCache, resultCollector);
 
-//
-//        EventHandlerFactory eventHandlerFactory =
-//                new BatchStructureEventHandlerFactory(getProperties(), resultCollector);
-//
-//        final List<TreeEventHandler> eventHandlers = eventHandlerFactory.createEventHandlers();
-//        EventRunner eventRunner = new EventRunner(createIterator(batch), eventHandlers, resultCollector);
-//
-//        eventRunner.run();
+        EventRunner eventRunner = new EventRunner(createIterator(batch), eventHandlerSupplier.get(), resultCollector);
+
+        eventRunner.run();
+
+//        eventHandlers.stream().filter(h -> h instanceof XmlBuilderEventHandler)
 //        String xml = null;
 //        //Need to find handler in the list returned by the EventHandlerFactory was the xml builder. One could imagine
 //        // refactoring
