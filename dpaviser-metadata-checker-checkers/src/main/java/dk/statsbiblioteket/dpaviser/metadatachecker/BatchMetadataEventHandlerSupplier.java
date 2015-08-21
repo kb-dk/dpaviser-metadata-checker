@@ -1,6 +1,6 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker;
 
-import dk.statsbiblioteket.dpaviser.metadatachecker.pdf.PDFEventHandler;
+import dk.statsbiblioteket.dpaviser.metadatachecker.infomedia.NewsMLEventHandler;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.TreeEventHandler;
 import dk.statsbiblioteket.newspaper.metadatachecker.caches.DocumentCache;
@@ -29,7 +29,8 @@ public class BatchMetadataEventHandlerSupplier implements Supplier<List<TreeEven
     @Override
     public List<TreeEventHandler> get() {
         return Arrays.<TreeEventHandler>asList(
-                new PDFEventHandler(properties, resultCollector)
+                //new PDFEventHandler(properties, resultCollector),
+                new NewsMLEventHandler(properties, documentCache, resultCollector)
         );
     }
 }
