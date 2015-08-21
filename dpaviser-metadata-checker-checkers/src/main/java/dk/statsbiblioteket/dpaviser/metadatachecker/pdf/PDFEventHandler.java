@@ -43,7 +43,6 @@ public class PDFEventHandler extends DefaultTreeEventHandler {
 
     protected void doValidate(AttributeParsingEvent event) throws Exception {
         File temp = File.createTempFile(event.getName(), ".pdf");
-        temp.deleteOnExit(); // FIXME:  Proper handling of temp files.
         Files.copy(event.getData(), temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         // ----  Not even close to PDF/A. We are happy if we can parse it with PDF-box.
@@ -52,7 +51,7 @@ public class PDFEventHandler extends DefaultTreeEventHandler {
         FileDataSource fds = new FileDataSource(temp);
         PreflightParser parser = new PreflightParser(fds);
 
-            PreflightDocument document = null;
+        PreflightDocument document = null;
         try {
             parser.parse();
 
