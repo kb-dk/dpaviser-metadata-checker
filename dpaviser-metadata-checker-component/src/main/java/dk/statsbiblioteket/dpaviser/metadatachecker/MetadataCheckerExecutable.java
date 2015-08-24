@@ -8,16 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Properties;
 
 /**
  * This component checks metadata for validity.
  */
-public class MetadataChecker {
+public class MetadataCheckerExecutable {
 
 
-    private static Logger log = LoggerFactory.getLogger(MetadataChecker.class);
+    private static Logger log = LoggerFactory.getLogger(MetadataCheckerExecutable.class);
 
     /**
      * The class must have a main method, so it can be started as a command line tool
@@ -36,7 +35,7 @@ public class MetadataChecker {
         //Parse the args to a properties construct
         Properties properties = NewspaperBatchAutonomousComponentUtils.parseArgs(args);
 
-        RunnableComponent<Batch> component = new MetadataCheckerComponent(properties, new HashSet<MetadataChecksFactory.Checks>());
+        RunnableComponent<Batch> component = new MetadataCheckerComponent(properties);
         CallResult result = NewspaperBatchAutonomousComponentUtils.startAutonomousComponent(properties, component);
         log.info(result.toString());
         return result.containsFailures();

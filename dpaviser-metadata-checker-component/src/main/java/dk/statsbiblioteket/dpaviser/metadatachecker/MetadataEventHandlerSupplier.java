@@ -1,6 +1,7 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker;
 
 import dk.statsbiblioteket.dpaviser.metadatachecker.infomedia.NewsMLEventHandler;
+import dk.statsbiblioteket.dpaviser.metadatachecker.pdf.PDFEventHandler;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.TreeEventHandler;
 import dk.statsbiblioteket.newspaper.metadatachecker.caches.DocumentCache;
@@ -13,14 +14,14 @@ import java.util.function.Supplier;
 /**
  * Provides the complete set of structure checkers for the batch structure.
  */
-public class BatchMetadataEventHandlerSupplier implements Supplier<List<TreeEventHandler>> {
+public class MetadataEventHandlerSupplier implements Supplier<List<TreeEventHandler>> {
 
     private Properties properties;
     final private DocumentCache documentCache;
     private final ResultCollector resultCollector;
 
 
-    public BatchMetadataEventHandlerSupplier(Properties properties, DocumentCache documentCache, ResultCollector resultCollector) {
+    public MetadataEventHandlerSupplier(Properties properties, DocumentCache documentCache, ResultCollector resultCollector) {
         this.properties = properties;
         this.documentCache = documentCache;
         this.resultCollector = resultCollector;
@@ -29,7 +30,7 @@ public class BatchMetadataEventHandlerSupplier implements Supplier<List<TreeEven
     @Override
     public List<TreeEventHandler> get() {
         return Arrays.<TreeEventHandler>asList(
-                //new PDFEventHandler(properties, resultCollector),
+                new PDFEventHandler(properties, resultCollector),
                 new NewsMLEventHandler(properties, documentCache, resultCollector)
         );
     }

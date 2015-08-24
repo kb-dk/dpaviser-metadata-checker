@@ -67,7 +67,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>dk.statsbiblioteket.dpaviser.metadatachecker.MetadataChecker</mainClass>
+                            <mainClass>dk.statsbiblioteket.dpaviser.metadatachecker.MetadataCheckerExecutable</mainClass>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                             <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
                         </manifest>

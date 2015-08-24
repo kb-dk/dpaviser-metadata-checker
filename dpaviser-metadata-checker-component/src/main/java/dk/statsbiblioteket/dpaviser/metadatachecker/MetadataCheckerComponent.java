@@ -1,125 +1,69 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker;
 
 import dk.statsbiblioteket.medieplatform.autonomous.Batch;
-import dk.statsbiblioteket.medieplatform.autonomous.ConfigConstants;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.medieplatform.autonomous.TreeProcessorAbstractRunnableComponent;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.ParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.EventRunner;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.MultiThreadedEventRunner;
-import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.TreeEventHandler;
-import dk.statsbiblioteket.util.xml.DOM;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
+import dk.statsbiblioteket.newspaper.metadatachecker.caches.DocumentCache;
 
-import java.io.InputStream;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
-import java.util.Set;
-import java.util.concurrent.Executors;
 
-/** Check Metadata of all nodes. */
-public class MetadataCheckerComponent
-        extends TreeProcessorAbstractRunnableComponent {
-    private Logger log = LoggerFactory.getLogger(getClass());
-    private final Set<MetadataChecksFactory.Checks> disabledChecks;
+/**
+ * Checks the directory structure of a batch.
+ */
+public class MetadataCheckerComponent extends TreeProcessorAbstractRunnableComponent {
 
-    /**
-     * Initialise metadata checker component. For used properties {@link TreeProcessorAbstractRunnableComponent#createIterator}.
-     *
-     * property fields that are used
-     * <ul>
-     * <li>atNinestars:boolean:default false: indicates if we are at ninestars and jpylyzer should be executed. The
-     * fields below are only relevant if this one is true</li>
-     * <li>jpylyzerPath:String: no default: the path to the jpylyzer executable</li>
-     * <li>scratch: String: no default: Path to the folder containing the batches</li>
-     * <li>controlPolicies: String: default null: The path to the control policies. Optional</li>
-     * </ul>
-     *
-     * @param properties Properties for initialising component.
-     * @param disabledChecks  a set of enums detailing the checks to be disabled
-     */
-    public MetadataCheckerComponent(Properties properties, Set<MetadataChecksFactory.Checks> disabledChecks) {
+    private final DocumentCache documentCache;
+
+    public MetadataCheckerComponent(Properties properties) {
+        this(properties, new DocumentCache());
+    }
+
+    public MetadataCheckerComponent(Properties properties, DocumentCache documentCache) {
         super(properties);
-        if (disabledChecks == null){
-            disabledChecks = new HashSet<>();
-        }
-        this.disabledChecks = disabledChecks;
+        this.documentCache = documentCache;
     }
 
     @Override
     public String getEventID() {
-        return "Metadata_checked";
+        return "Metadata_Checked";
     }
 
     @Override
     /**
-     * For each attribute in batch: Check metadata contents.
+     * Check the batch-structure tree received for errors. (I.e. we are gonna check the received tree for
+     * errors. The tree received represents a batch structure, which is the structure of a batch).
      *
-     * @param batch The batch to check
-     * @param resultCollector Collector to get the result.
+     * @throws IOException
      */
-    public void doWorkOnItem(Batch batch,
-                              ResultCollector resultCollector)
-            throws
-            Exception {
-        log.info("Starting validation of '{}'", batch.getFullID());
+    public void doWorkOnItem(Batch batch, ResultCollector resultCollector) throws Exception {
 
-        InputStream batchXmlStructureStream = retrieveBatchStructure(batch);
-        if (batchXmlStructureStream == null){
-            throw new RuntimeException("Failed to resolve batch manifest from data collector");
-        }
+        MetadataEventHandlerSupplier eventHandlerSupplier =
+                new MetadataEventHandlerSupplier(getProperties(), documentCache, resultCollector);
 
-        Document batchXmlStructure = DOM.streamToDOM(batchXmlStructureStream);
+        EventRunner eventRunner = new EventRunner(createIterator(batch), eventHandlerSupplier.get(), resultCollector);
 
-
-        MetadataChecksFactory metadataChecksFactory = getMetadataChecksFactory(
-                batch,
-                resultCollector,
-                batchXmlStructure);
-        List<TreeEventHandler> eventHandlers = metadataChecksFactory.createEventHandlers();
-        EventRunner eventRunner = new MultiThreadedEventRunner(createIterator(batch),
-                eventHandlers,
-                resultCollector,
-                new MultiThreadedEventRunner.EventCondition() {
-                    @Override
-                    public boolean shouldFork(ParsingEvent event) {
-                        String[] splits = event.getName().split("/");
-                        return splits.length == 4;
-                    }
-
-                    @Override
-                    public boolean shouldJoin(ParsingEvent event) {
-                        String[] splits = event.getName().split("/");
-                        return splits.length == 3;
-                    }
-                },
-                Executors.newFixedThreadPool(Integer.parseInt(getProperties().getProperty(ConfigConstants.THREADS_PER_BATCH,
-                        "1"))));
         eventRunner.run();
-        log.info("Done validating '{}', success: {}", batch.getFullID(), resultCollector.isSuccess());
+
+//        eventHandlers.stream().filter(h -> h instanceof XmlBuilderEventHandler)
+//        String xml = null;
+//        //Need to find handler in the list returned by the EventHandlerFactory was the xml builder. One could imagine
+//        // refactoring
+//        //EventHandlerFactory to return a map from classname to EventHandler so that one could simple look it up.
+//        for (TreeEventHandler handler : eventHandlers) {
+//            if (handler instanceof XmlBuilderEventHandler) {
+//                xml = ((XmlBuilderEventHandler) handler).getXml();
+//            }
+//        }
+//        if (xml == null) {
+//            throw new RuntimeException(
+//                    "Did not generate xml representation of directory structure. Could not complete tests.");
+//        }
+//
+//        storeBatchStructure(batch, new ByteArrayInputStream(xml.getBytes("UTF-8")));
+//
+//        Validator validator1 = new StructureValidator(DEMANDS_SCH);
+//        validator1.validate(batch, new ByteArrayInputStream(xml.getBytes("UTF-8")), resultCollector);
+
     }
-
-    protected MetadataChecksFactory getMetadataChecksFactory(Batch batch, ResultCollector resultCollector,
-                                                           Document batchXmlStructure) {
-        boolean atNinestars =
-                Boolean.parseBoolean(getProperties().getProperty(ConfigConstants.AT_NINESTARS, Boolean.FALSE.toString()));
-        MetadataChecksFactory metadataChecksFactory;
-
-        if (atNinestars) {
-            String jpylyzerPath = getProperties().getProperty(ConfigConstants.JPYLYZER_PATH);
-            String batchFolder = getProperties().getProperty(ConfigConstants.ITERATOR_FILESYSTEM_BATCHES_FOLDER);
-            metadataChecksFactory = new MetadataChecksFactory(resultCollector,
-                                                              true,
-                                                              batchFolder,
-                                                              jpylyzerPath,
-                    batch, batchXmlStructure,disabledChecks);
-        } else {
-            metadataChecksFactory = new MetadataChecksFactory(resultCollector, batch, batchXmlStructure,disabledChecks);
-        }
-        return metadataChecksFactory;
-    }
-
 }

@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 
-/** ClasspathResourceInput is needed as xml.xsd is xs:import'ed, and reliable information on how to expand this was not easily locatable.
+/** ClasspathResourceInput is needed as xml.xsd is xs:import'ed, and reliable information on
+ * how to expand this inside the XSD itself was not easily locatable.
  *
  * This class allows using an InputStream as an LSInput.
  *
