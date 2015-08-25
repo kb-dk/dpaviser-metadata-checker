@@ -24,7 +24,7 @@ public class PDFEventHandler extends DefaultTreeEventHandler {
     public void handleAttribute(AttributeParsingEvent event) {
         if (event.getName().endsWith(".pdf/contents")) { // FIXME:  Artifact of newspaper pipeline.
             try {
-                doTest(event);
+                pdfValidator.test(event.getName(), event.getData());
             } catch (Exception e) {
                 resultCollector.addFailure(
                         event.getName(),
@@ -35,9 +35,5 @@ public class PDFEventHandler extends DefaultTreeEventHandler {
                 );
             }
         }
-    }
-
-    protected void doTest(AttributeParsingEvent event) throws Exception {
-        pdfValidator.test(event.getName(), event.getData());
     }
 }
