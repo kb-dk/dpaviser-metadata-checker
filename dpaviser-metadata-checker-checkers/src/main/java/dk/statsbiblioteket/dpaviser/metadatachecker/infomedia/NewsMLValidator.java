@@ -1,6 +1,5 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker.infomedia;
 
-import com.google.common.base.Throwables;
 import dk.statsbiblioteket.dpaviser.metadatachecker.NameInputStreamValidator;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.newspaper.metadatachecker.caches.DocumentCache;
@@ -94,8 +93,10 @@ public class NewsMLValidator implements NameInputStreamValidator {
             db.setErrorHandler(failingErrorHandler);
             Document document = db.parse(inputStream);  // parsing is set up to validate
             return true;
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException("could not parse PDF", e);
         }
     }
 }
