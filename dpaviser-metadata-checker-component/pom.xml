@@ -7,7 +7,7 @@
     <parent>
         <groupId>dk.statsbiblioteket.newspaper</groupId>
         <artifactId>dpaviser-metadata-checker</artifactId>
-        <version>master-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>dpaviser-metadata-checker-component</artifactId>
@@ -16,7 +16,7 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>dpaviser-metadata-checker-checkers</artifactId>
-            <version>master-SNAPSHOT</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
         <!--schematron. This must be the first dependency, reason unknown-->

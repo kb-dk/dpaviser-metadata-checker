@@ -32,7 +32,7 @@ public class NewsMLEventHandler extends DefaultTreeEventHandler {
     public void handleAttribute(AttributeParsingEvent event) {
         if (event.getName().endsWith(".xml")) {
             try {
-                doValidate(event);
+                doTest(event);
             } catch (Exception e) {
                 resultCollector.addFailure(
                         event.getName(),
@@ -45,10 +45,10 @@ public class NewsMLEventHandler extends DefaultTreeEventHandler {
         }
     }
 
-    protected void doValidate(AttributeParsingEvent event) throws Exception {
+    protected void doTest(AttributeParsingEvent event) throws Exception {
         // Validate against the appropriate schema.
         InputStream inputStream = event.getData();
-        validator.doValidate(event.getName(), inputStream);
+        validator.test(event.getName(), inputStream);
         // additional DOM checks?...
     }
 }

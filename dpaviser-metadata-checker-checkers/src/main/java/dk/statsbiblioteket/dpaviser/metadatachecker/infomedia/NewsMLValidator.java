@@ -1,5 +1,6 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker.infomedia;
 
+import com.google.common.base.Throwables;
 import dk.statsbiblioteket.dpaviser.metadatachecker.NameInputStreamValidator;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.newspaper.metadatachecker.caches.DocumentCache;
@@ -87,10 +88,14 @@ public class NewsMLValidator implements NameInputStreamValidator {
     };
 
     @Override
-    public boolean doValidate(String name, InputStream inputStream) throws Exception {
-        DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
-        db.setErrorHandler(failingErrorHandler);
-        Document document = db.parse(inputStream);  // parsing is set up to validate
-        return true;
+    public boolean test(String name, InputStream inputStream) {
+        try {
+            DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
+            db.setErrorHandler(failingErrorHandler);
+            Document document = db.parse(inputStream);  // parsing is set up to validate
+            return true;
+        } catch (Exception e) {
+            throw Throwables.propagate(e);
+        }
     }
 }

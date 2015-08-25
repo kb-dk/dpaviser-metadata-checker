@@ -1,5 +1,6 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker.pdf;
 
+import com.google.common.base.Throwables;
 import dk.statsbiblioteket.dpaviser.metadatachecker.NameInputStreamValidator;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.util.Strings;
@@ -21,9 +22,10 @@ public class PDFValidator implements NameInputStreamValidator {
     }
 
     @Override
-    public boolean doValidate(String name, InputStream inputStream) throws Exception {
-        File temp = File.createTempFile(name, ".pdf");
+    public boolean test(String name, InputStream inputStream) {
+        File temp = null;
         try {
+            temp = File.createTempFile(name, ".pdf");
             Files.copy(inputStream, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             // ----  Not even close to PDF/A. We are happy if we can parse it with PDF-box.
@@ -52,8 +54,12 @@ public class PDFValidator implements NameInputStreamValidator {
                     document.close();
                 }
             }
+        } catch (Exception e) {
+            Throwables.propagate(e);
         } finally {
-            temp.delete();
+            if (temp != null) {
+                temp.delete();
+            }
         }
         return true;
     }
