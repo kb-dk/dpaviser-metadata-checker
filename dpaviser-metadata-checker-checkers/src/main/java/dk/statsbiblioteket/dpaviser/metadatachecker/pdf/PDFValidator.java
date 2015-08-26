@@ -6,11 +6,8 @@ import edu.harvard.hul.ois.jhove.App;
 import edu.harvard.hul.ois.jhove.JhoveBase;
 import edu.harvard.hul.ois.jhove.Module;
 import edu.harvard.hul.ois.jhove.OutputHandler;
-import edu.harvard.hul.ois.jhove.handler.XmlHandler;
-import edu.harvard.hul.ois.jhove.module.PdfModule;
 
 import java.io.InputStream;
-import java.util.Collections;
 
 public class PDFValidator implements NameInputStreamValidator {
     String encoding;
@@ -34,18 +31,19 @@ public class PDFValidator implements NameInputStreamValidator {
         App app = new App("dpaviser", "${project.version}", new int[]{2015, 8, 24}, "usage...", "rights...");
         // Condensed from Jhove.java
         JhoveBase je = new JhoveBase();
-        je.setLogLevel("SEVERE");
-        je.init(null, null); // no config file.
+        //je.setLogLevel("SEVERE");
+        je.setLogLevel("INFO");
+        je.init("/home/tra/git/dpaviser-aggregator/jhove/jhove-installer/src/main/config/jhove.conf", null); // no config file.
 
-        Module module = new PdfModule();
-        module.setDefaultParams(Collections.EMPTY_LIST);
-        module.resetParams();
+        Module module = je.getModule("pdf");
+//        module.setDefaultParams(Collections.EMPTY_LIST);
+//        module.resetParams();
 
-        OutputHandler handler = new XmlHandler();
+        OutputHandler handler = je.getHandler("xml");
 
         OutputHandler aboutHandler = null; // debugging help not used by us.
 
-        String[] dirFileOrUri = {"/home/tra/Skrivebord/infomed/DRS/2015/06/01/DRS20150601X11#0001.pdf"};
+        String[] dirFileOrUri = {"...pdf"};
         String outputFile = null; // Output file _name_.  null -> System.out.
         String tempDir = null;
 
