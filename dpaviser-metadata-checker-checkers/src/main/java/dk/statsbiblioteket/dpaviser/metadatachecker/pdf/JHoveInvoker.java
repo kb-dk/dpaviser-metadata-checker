@@ -4,9 +4,11 @@ package dk.statsbiblioteket.dpaviser.metadatachecker.pdf;
 import com.google.common.io.ByteStreams;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -18,6 +20,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,20 +33,12 @@ public class JHoveInvoker {
 
 
     public static void main(String[] args) throws Exception {
-        List<String> command = Arrays.<String>asList("jhove", "-h", "xml", "-m", "pdf-hul",
-                "/home/tra/Skrivebord/pdf-sample.pdf");
+        List<String> command = Arrays.<String>asList("jhove", "-h", "xml", "-m", "pdf-hul");
 
-        byte[] outputBytes = invokeCommand(command);
-
-        // inputstream copied to memory
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(new ByteArrayInputStream(outputBytes));
-
-        // ---
-
+        Document document;
+        try (InputStream inputStream = new FileInputStream("/home/tra/Skrivebord/pdf-sample.pdf")) {
+            document = new JHoveInvoker().domFromJHove(command, inputStream);
+        }
         printDocument(document, System.out);
 
         // Stolen from IteratorForFedora3.java
@@ -62,13 +57,33 @@ public class JHoveInvoker {
 
     }
 
-    public static byte[] invokeCommand(List<String> command) throws IOException, InterruptedException {
+    public Document domFromJHove(List<String> command, InputStream inputStream) throws IOException, InterruptedException, ParserConfigurationException, SAXException {
+        byte[] outputBytes = invokeCommand(command, inputStream);
+
+        // inputstream copied to memory
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+
+        // ---
+        return builder.parse(new ByteArrayInputStream(outputBytes));
+    }
+
+    public static byte[] invokeCommand(List<String> command, InputStream inputStream) throws IOException, InterruptedException {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         Process process = processBuilder.start();
 
-        InputStream inputStream = process.getInputStream();
+        try {
+            ByteStreams.copy(inputStream, process.getOutputStream()); // feed stdin.
+        } finally {
+            ByteStreams.copy(process.getErrorStream(), System.err);
+        }
+        inputStream.close();
+
+        InputStream resultStream = process.getInputStream();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ByteStreams.copy(inputStream, baos);
+        ByteStreams.copy(resultStream, baos);
         process.waitFor(60, TimeUnit.SECONDS);
         return baos.toByteArray();
     }
