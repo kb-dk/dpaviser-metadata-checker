@@ -20,10 +20,6 @@
         <tag>HEAD</tag>
     </scm>
 
-    <properties>
-        <jhove.version>[1.12.0,1.13.0)</jhove.version>
-    </properties>
-
     <repositories>
         <repository>
             <id>sbforge-nexus</id>
@@ -124,25 +120,7 @@
                 <artifactId>guava</artifactId>
                 <version>18.0</version>
             </dependency>
-            <dependency>
-                <groupId>org.openpreservation.jhove</groupId>
-                <artifactId>jhove-core</artifactId>
-                <!-- avaits 1.12 Maven central release -->
-                <version>${jhove.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openpreservation.jhove</groupId>
-                <artifactId>jhove-modules</artifactId>
-                <!-- avaits 1.12 Maven central release -->
-                <version>${jhove.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openpreservation.jhove</groupId>
-                <artifactId>jhove-apps</artifactId>
-                <!-- avaits 1.12 Maven central release -->
-                <version>${jhove.version}</version>
-            </dependency>
-        </dependencies>
+         </dependencies>
     </dependencyManagement>
 
     <modules>
