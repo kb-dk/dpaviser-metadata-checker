@@ -47,6 +47,7 @@
         <dependency>
             <groupId>org.openpreservation.jhove</groupId>
             <artifactId>jhove-apps</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

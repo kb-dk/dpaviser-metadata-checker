@@ -21,7 +21,7 @@
     </scm>
 
     <properties>
-        <jhove.version>1.12.0-SNAPSHOT</jhove.version>
+        <jhove.version>[1.12.0,1.13.0)</jhove.version>
     </properties>
 
     <repositories>
@@ -44,6 +44,15 @@
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
+        </repository>
+        <!-- awaiting official 1.12 release -->
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>opf-dev-mvn</id>
+            <name>opf-dev</name>
+            <url>http://artifactory.opf-labs.org/artifactory/opf-dev</url>
         </repository>
     </repositories>
 
@@ -140,6 +149,4 @@
         <module>dpaviser-metadata-checker-checkers</module>
         <module>dpaviser-metadata-checker-component</module>
     </modules>
-
 </project>
-
