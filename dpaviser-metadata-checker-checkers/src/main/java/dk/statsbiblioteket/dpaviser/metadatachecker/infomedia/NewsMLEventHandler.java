@@ -1,7 +1,7 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker.infomedia;
 
 
-import dk.statsbiblioteket.dpaviser.metadatachecker.NameInputStreamValidator;
+import dk.statsbiblioteket.dpaviser.metadatachecker.NameInputStreamResultCollectorFunction;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.DefaultTreeEventHandler;
@@ -14,7 +14,7 @@ import java.util.Properties;
 public class NewsMLEventHandler extends DefaultTreeEventHandler {
     private final ResultCollector resultCollector;
     private final DocumentCache documentCache;
-    private final NameInputStreamValidator validator;
+    private final NameInputStreamResultCollectorFunction validator;
     private Properties properties;
 
 
@@ -24,7 +24,7 @@ public class NewsMLEventHandler extends DefaultTreeEventHandler {
 
         this.documentCache = documentCache;
         this.resultCollector = resultCollector;
-        this.validator= new NewsMLValidator(resultCollector, documentCache);
+        this.validator= new NewsMLResultCollectorFunction(resultCollector, documentCache, "NewsXML", "1.0");
     }
 
 
@@ -48,7 +48,6 @@ public class NewsMLEventHandler extends DefaultTreeEventHandler {
     protected void doTest(AttributeParsingEvent event) throws Exception {
         // Validate against the appropriate schema.
         InputStream inputStream = event.getData();
-        validator.test(event.getName(), inputStream);
-        // additional DOM checks?...
+        validator.apply(event.getName(), inputStream).mergeInto(resultCollector);
     }
 }

@@ -1,8 +1,9 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker.infomedia;
 
-import dk.statsbiblioteket.dpaviser.metadatachecker.NameInputStreamValidator;
+import dk.statsbiblioteket.dpaviser.metadatachecker.NameInputStreamResultCollectorFunction;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.newspaper.metadatachecker.caches.DocumentCache;
+import dk.statsbiblioteket.util.Strings;
 import org.w3c.dom.Document;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSResourceResolver;
@@ -18,17 +19,38 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.InputStream;
 
-public class NewsMLValidator implements NameInputStreamValidator {
+public class NewsMLResultCollectorFunction implements NameInputStreamResultCollectorFunction {
 
     public static final String NEWSML_XSD = "/NewsML_1.2-infomedia.xsd";
 
     private final DocumentCache documentCache;
     private final ResultCollector resultCollector;
     private final DocumentBuilderFactory documentBuilderFactory;
+    private String name;
+    private String version;
+    private ErrorHandler failingErrorHandler = new ErrorHandler() {
+        @Override
+        public void warning(SAXParseException exception) throws SAXException {
+            throw exception;
+        }
 
-    public NewsMLValidator(ResultCollector resultCollector, DocumentCache documentCache) {
+        @Override
+        public void error(SAXParseException exception) throws SAXException {
+            throw exception;
+        }
+
+        @Override
+        public void fatalError(SAXParseException exception) throws SAXException {
+            throw exception;
+        }
+    };
+
+    public NewsMLResultCollectorFunction(ResultCollector resultCollector, DocumentCache documentCache,
+                                         String name, String version) {
         this.resultCollector = resultCollector;
         this.documentCache = documentCache;
+        this.name = name;
+        this.version = version;
 
         InputStream schemaInputStream = getClass().getResourceAsStream(NEWSML_XSD);
         if (schemaInputStream == null) {
@@ -69,34 +91,21 @@ public class NewsMLValidator implements NameInputStreamValidator {
         return schema;
     }
 
-    private ErrorHandler failingErrorHandler = new ErrorHandler() {
-        @Override
-        public void warning(SAXParseException exception) throws SAXException {
-            throw exception;
-        }
-
-        @Override
-        public void error(SAXParseException exception) throws SAXException {
-            throw exception;
-        }
-
-        @Override
-        public void fatalError(SAXParseException exception) throws SAXException {
-            throw exception;
-        }
-    };
-
     @Override
-    public boolean test(String name, InputStream inputStream) {
+    public ResultCollector apply(String name, InputStream inputStream) {
+        ResultCollector resultCollector = new ResultCollector(name, version, null);
         try {
             DocumentBuilder db = documentBuilderFactory.newDocumentBuilder();
             db.setErrorHandler(failingErrorHandler);
             Document document = db.parse(inputStream);  // parsing is set up to validate
-            return true;
-        } catch (RuntimeException e) {
-            throw e;
         } catch (Exception e) {
-            throw new RuntimeException("could not parse PDF", e);
+            resultCollector.addFailure(
+                    name,
+                    "exception",
+                    getClass().getSimpleName(),
+                    "Error verifying PDF: " + e.toString(),
+                    Strings.getStackTrace(e));
         }
+        return resultCollector;
     }
 }

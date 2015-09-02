@@ -10,13 +10,13 @@ import java.util.Properties;
 
 public class PDFEventHandler extends DefaultTreeEventHandler {
     private final ResultCollector resultCollector;
-    private final PDFValidator pdfValidator;
+    private final PDFResultCollectorFunction pdfValidator;
     private Properties properties;
 
     public PDFEventHandler(Properties properties, ResultCollector resultCollector) {
         this.properties = properties;
         this.resultCollector = resultCollector;
-        this.pdfValidator = new PDFValidator(resultCollector);
+        this.pdfValidator = new PDFResultCollectorFunction(d -> false);
     }
 
 
@@ -24,7 +24,7 @@ public class PDFEventHandler extends DefaultTreeEventHandler {
     public void handleAttribute(AttributeParsingEvent event) {
         if (event.getName().endsWith(".pdf/contents")) { // FIXME:  Artifact of newspaper pipeline.
             try {
-                pdfValidator.test(event.getName(), event.getData());
+                pdfValidator.apply(event.getName(), event.getData()).mergeInto(resultCollector);
             } catch (Exception e) {
                 resultCollector.addFailure(
                         event.getName(),
