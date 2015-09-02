@@ -1,6 +1,7 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker.pdf;
 
 
+import dk.statsbiblioteket.dpaviser.metadatachecker.helpers.CommandPipe;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.common.AttributeParsingEvent;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.DefaultTreeEventHandler;
@@ -13,10 +14,10 @@ public class PDFEventHandler extends DefaultTreeEventHandler {
     private final PDFResultCollectorFunction pdfValidator;
     private Properties properties;
 
-    public PDFEventHandler(Properties properties, ResultCollector resultCollector) {
+    public PDFEventHandler(Properties properties, CommandPipe commandPipe, ResultCollector resultCollector) {
         this.properties = properties;
         this.resultCollector = resultCollector;
-        this.pdfValidator = new PDFResultCollectorFunction(d -> false);
+        this.pdfValidator = new PDFResultCollectorFunction(commandPipe, d -> false);
     }
 
 
