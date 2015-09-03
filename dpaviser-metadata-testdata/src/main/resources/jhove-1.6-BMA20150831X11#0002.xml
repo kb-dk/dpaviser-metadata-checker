@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jhove xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://hul.harvard.edu/ois/xml/ns/jhove" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/jhove http://hul.harvard.edu/ois/xml/xsd/jhove/1.6/jhove.xsd" name="Jhove" release="1.12.0-SNAPSHOT" date="2015-09-03">
- <date>2015-09-03T16:52:12+02:00</date>
- <repInfo uri="BMA20150831X11%230002.pdf">
-  <reportingModule release="1.7" date="2012-08-12">PDF-hul</reportingModule>
-  <lastModified>2015-09-03T16:40:37+02:00</lastModified>
+<jhove xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://hul.harvard.edu/ois/xml/ns/jhove" xsi:schemaLocation="http://hul.harvard.edu/ois/xml/ns/jhove http://hul.harvard.edu/ois/xml/xsd/jhove/1.6/jhove.xsd" name="Jhove" release="1.6" date="2011-01-04">
+ <date>2015-09-02T17:57:31+02:00</date>
+ <repInfo uri="../Downloads/BMA20150831X11%230002.pdf">
+  <reportingModule release="1.8" date="2009-05-22">PDF-hul</reportingModule>
+  <lastModified>2015-09-02T15:32:36+02:00</lastModified>
   <size>1635438</size>
   <format>PDF</format>
   <version>1.4</version>
@@ -145,7 +145,6 @@
        <mix:ImageAssessmentMetadata>
         <mix:ImageColorEncoding>
          <mix:BitsPerSample>
-          <mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
           <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
          </mix:BitsPerSample>
         </mix:ImageColorEncoding>
@@ -196,7 +195,6 @@
        <mix:ImageAssessmentMetadata>
         <mix:ImageColorEncoding>
          <mix:BitsPerSample>
-          <mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
           <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
          </mix:BitsPerSample>
         </mix:ImageColorEncoding>
@@ -247,7 +245,6 @@
        <mix:ImageAssessmentMetadata>
         <mix:ImageColorEncoding>
          <mix:BitsPerSample>
-          <mix:bitsPerSampleValue>8</mix:bitsPerSampleValue>
           <mix:bitsPerSampleUnit>integer</mix:bitsPerSampleUnit>
          </mix:BitsPerSample>
         </mix:ImageColorEncoding>
