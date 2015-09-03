@@ -4,19 +4,15 @@ import dk.statsbiblioteket.dpaviser.metadatachecker.NameInputStreamResultCollect
 import dk.statsbiblioteket.dpaviser.metadatachecker.helpers.CommandPipe;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.util.Strings;
-import dk.statsbiblioteket.util.console.ProcessRunner;
 import dk.statsbiblioteket.util.xml.DOM;
 import org.w3c.dom.Document;
 
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Predicate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class PDFResultCollectorFunction implements NameInputStreamResultCollectorFunction {
-    public static final List<String> JHOVE_PDF_INVOCATION_COMMAND_LIST = Arrays.<String>asList("jhove", "-h", "xml", "-m", "pdf-hul");
     private static final java.lang.String VERSION = "1.0";
     /**
      * May be used for generating XPath with jhove namespace defined (as jhove)
@@ -65,16 +61,6 @@ public class PDFResultCollectorFunction implements NameInputStreamResultCollecto
         return resultCollector;
     }
 
-    protected ProcessRunner getProcessRunnerForInputStream(List<String> command, InputStream inputStream) {
-        ProcessRunner processRunner = new ProcessRunner(command);
-        processRunner.setInputStream(inputStream);
-        processRunner.setErrorCollectionByteSize(-1);
-        processRunner.setOutputCollectionByteSize(-1);
-        processRunner.run();
-
-        System.err.println(processRunner.getProcessErrorAsString()); // actually look at?
-        return processRunner;
-    }
 
     @Override
     public ResultCollector apply(String name, InputStream inputStream) {

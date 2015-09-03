@@ -1,24 +1,27 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker;
 
+import dk.statsbiblioteket.dpaviser.metadatachecker.helper.JHoveCommandPipe;
+import dk.statsbiblioteket.dpaviser.metadatachecker.helpers.CommandPipe;
 import dk.statsbiblioteket.dpaviser.metadatachecker.infomedia.NewsMLEventHandler;
 import dk.statsbiblioteket.dpaviser.metadatachecker.pdf.PDFEventHandler;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
 import dk.statsbiblioteket.medieplatform.autonomous.iterator.eventhandlers.TreeEventHandler;
 import dk.statsbiblioteket.newspaper.metadatachecker.caches.DocumentCache;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.function.Supplier;
+
+import static java.util.Arrays.asList;
 
 /**
  * Provides the complete set of structure checkers for the batch structure.
  */
 public class MetadataEventHandlerSupplier implements Supplier<List<TreeEventHandler>> {
 
-    private Properties properties;
     final private DocumentCache documentCache;
     private final ResultCollector resultCollector;
+    private Properties properties;
 
 
     public MetadataEventHandlerSupplier(Properties properties, DocumentCache documentCache, ResultCollector resultCollector) {
@@ -29,8 +32,10 @@ public class MetadataEventHandlerSupplier implements Supplier<List<TreeEventHand
 
     @Override
     public List<TreeEventHandler> get() {
-        return Arrays.<TreeEventHandler>asList(
-                new PDFEventHandler(properties, resultCollector),
+        CommandPipe jhovePipe = new JHoveCommandPipe(System.getProperty("user.home") + "/jhove-beta");
+
+        return asList(
+                new PDFEventHandler(properties, jhovePipe, resultCollector),
                 new NewsMLEventHandler(properties, documentCache, resultCollector)
         );
     }
