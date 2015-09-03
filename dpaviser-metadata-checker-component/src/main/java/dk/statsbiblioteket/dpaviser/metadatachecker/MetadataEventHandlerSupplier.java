@@ -1,7 +1,6 @@
 package dk.statsbiblioteket.dpaviser.metadatachecker;
 
 import dk.statsbiblioteket.dpaviser.metadatachecker.helper.JHoveCommandPipe;
-import dk.statsbiblioteket.dpaviser.metadatachecker.helpers.CommandPipe;
 import dk.statsbiblioteket.dpaviser.metadatachecker.infomedia.NewsMLEventHandler;
 import dk.statsbiblioteket.dpaviser.metadatachecker.pdf.PDFEventHandler;
 import dk.statsbiblioteket.medieplatform.autonomous.ResultCollector;
@@ -32,10 +31,9 @@ public class MetadataEventHandlerSupplier implements Supplier<List<TreeEventHand
 
     @Override
     public List<TreeEventHandler> get() {
-        CommandPipe jhovePipe = new JHoveCommandPipe(System.getProperty("user.home") + "/jhove-beta");
 
         return asList(
-                new PDFEventHandler(properties, jhovePipe, resultCollector),
+                new PDFEventHandler(properties, new JHoveCommandPipe(), resultCollector),
                 new NewsMLEventHandler(properties, documentCache, resultCollector)
         );
     }

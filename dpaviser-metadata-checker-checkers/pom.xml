@@ -10,6 +10,7 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
+
     <artifactId>dpaviser-metadata-checker-checkers</artifactId>
 
     <dependencies>
@@ -40,6 +41,11 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dk.statsbiblioteket.newspaper</groupId>
+            <artifactId>dpaviser-metadata-testdata</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

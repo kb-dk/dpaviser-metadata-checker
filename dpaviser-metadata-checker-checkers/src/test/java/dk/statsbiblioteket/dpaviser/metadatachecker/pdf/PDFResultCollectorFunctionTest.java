@@ -15,9 +15,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Predicate;
 
+import static dk.statsbiblioteket.dpaviser.metadatachecker.testdata.Resources.BMA20150831_X11_0002_XML;
+
 public class PDFResultCollectorFunctionTest {
 
-    CommandPipe pregeneratedJHoveOutput = new ResourceReplacerCommandPipe("/BMA20150831X11#0002.xml");
+    CommandPipe pregeneratedJHoveOutput = new ResourceReplacerCommandPipe(BMA20150831_X11_0002_XML);
 
     @Test(expectedExceptions = NullPointerException.class)
     public void testNullInputStream() throws Exception {

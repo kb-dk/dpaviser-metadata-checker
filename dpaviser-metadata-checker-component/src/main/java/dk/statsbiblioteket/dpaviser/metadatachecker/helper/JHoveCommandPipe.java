@@ -16,6 +16,10 @@ public class JHoveCommandPipe implements CommandPipe {
         this.command = asList(dir + "/jhove", "-h", "xml", "-m", "pdf-hul", "-l", "OFF");
     }
 
+    public JHoveCommandPipe() {
+        this(System.getProperty("user.home") + "/jhove-beta");
+    }
+
     @Override
     public InputStream apply(InputStream is) {
         ProcessRunner processRunner = new ProcessRunner(command);
