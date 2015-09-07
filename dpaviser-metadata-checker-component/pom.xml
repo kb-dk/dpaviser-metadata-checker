@@ -16,7 +16,7 @@
         <dependency>
             <groupId>dk.statsbiblioteket.newspaper</groupId>
             <artifactId>dpaviser-metadata-checker-checkers</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!--schematron. This must be the first dependency, reason unknown-->
