@@ -9,20 +9,28 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 
 
 public class JHoveCommandPipe implements CommandPipe {
     private final List<String> command;
+    private Map<String, String> environmentVariables;
+
+    public JHoveCommandPipe() {
+        this(System.getProperty("user.home") + "/jhove-beta", new HashMap<>());
+    }
 
     public JHoveCommandPipe(String dir) {
         this.command = asList(dir + "/jhove", "-h", "xml", "-m", "pdf-hul", "-l", "OFF");
     }
 
-    public JHoveCommandPipe() {
-        this(System.getProperty("user.home") + "/jhove-beta");
+    public JHoveCommandPipe(String dir, Map<String,String> environmentVariables) {
+        this(dir);
+        this.environmentVariables = environmentVariables;
     }
 
     @Override
@@ -36,6 +44,7 @@ public class JHoveCommandPipe implements CommandPipe {
             actualCommand.add(tmpFile.getAbsolutePath());
 
             ProcessRunner processRunner = new ProcessRunner(actualCommand);
+            processRunner.setEnviroment(environmentVariables);
             processRunner.setErrorCollectionByteSize(-1);
             processRunner.setOutputCollectionByteSize(-1);
             processRunner.run();
