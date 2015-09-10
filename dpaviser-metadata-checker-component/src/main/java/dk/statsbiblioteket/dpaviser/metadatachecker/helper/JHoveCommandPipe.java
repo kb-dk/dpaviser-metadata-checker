@@ -21,11 +21,17 @@ public class JHoveCommandPipe implements CommandPipe {
     private Map<String, String> environmentVariables;
 
     public JHoveCommandPipe() {
-        this(System.getProperty("user.home") + "/jhove-beta", new HashMap<>());
+        this(System.getProperty("user.home") + System.getProperty("file.separator") + "jhove-beta", new HashMap<>());
     }
 
     public JHoveCommandPipe(String dir) {
-        this.command = asList(dir + "/jhove", "-h", "xml", "-m", "pdf-hul", "-l", "OFF");
+        List<String> l = new ArrayList<String>();
+        l.addAll(System.getProperty("os.name").startsWith("Windows")
+                ? asList("cmd", "/c", dir + System.getProperty("file.separator") + "jhove.bat", "-c", dir + "/../conf/jhove.conf")
+                : asList(dir + System.getProperty("file.separator") + "jhove", "-c", dir + "/../conf/jhove.conf"));
+
+        l.addAll(asList("-h", "xml", "-m", "pdf-hul", "-l", "OFF"));
+        this.command = l;
     }
 
     public JHoveCommandPipe(String dir, Map<String,String> environmentVariables) {
@@ -43,6 +49,7 @@ public class JHoveCommandPipe implements CommandPipe {
             List<String> actualCommand = new ArrayList<>(command);
             actualCommand.add(tmpFile.getAbsolutePath());
 
+            System.out.println(actualCommand);
             ProcessRunner processRunner = new ProcessRunner(actualCommand);
             processRunner.setEnviroment(environmentVariables);
             processRunner.setErrorCollectionByteSize(-1);
