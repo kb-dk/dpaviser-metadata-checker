@@ -41,15 +41,6 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
-        <!-- awaiting official 1.12 release -->
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>opf-dev-mvn</id>
-            <name>opf-dev</name>
-            <url>http://artifactory.opf-labs.org/artifactory/opf-dev</url>
-        </repository>
     </repositories>
 
     <dependencyManagement>
